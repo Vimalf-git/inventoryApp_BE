@@ -14,7 +14,7 @@ const getCategory=async(req,res)=>{
 try {
     const categoryList=await categoryModel.find({},{_id:0});
     const category=categoryList[0].category
-    console.log(categoryList);
+    // console.log(categoryList);
     res.status(200).send(
         {category}
     )

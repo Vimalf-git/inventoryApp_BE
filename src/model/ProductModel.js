@@ -5,7 +5,7 @@ const productSchema=new mongoose.Schema({
     category:{type:String,require:[true,"category is required"]},
     price:{type:String,require:[true,'price required']},
     quantity:{type:String,require:[true,'quantity required']},
-    ProductCode:{type:String},
+    ProductCode:{type:String,require:[true,'code required']},
     value:{type:String},
 
 },{

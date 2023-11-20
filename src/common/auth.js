@@ -20,7 +20,8 @@ const validate = async (req, res, next) => {
     if (token) {
         const decodeToken = await Jwt.decode(token);
         const curTime = (+ new Date()) / 1000;
-
+        console.log(curTime);
+        console.log(decodeToken.exp);
         if (curTime < decodeToken.exp) {
             next()
         } else {
