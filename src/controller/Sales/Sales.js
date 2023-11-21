@@ -1,7 +1,7 @@
 import salesModel from "../../model/Sales.js";
 import productModel from "../../model/ProductModel.js";
 const salesDataAdd = async (req, res) => {
-    // console.log(req.body);
+    console.log(req.body);
     try {
         const salesData = await salesModel.findOne({
             $and: [
@@ -9,23 +9,27 @@ const salesDataAdd = async (req, res) => {
                 { productName: req.body.productName }, { category: req.body.category }
             ]
         })
-
-        console.log(salesData);
+        const prodQtyReduce = await productModel.findOne({ _id: req.body.id });
+        console.log(prodQtyReduce);
         const currentDate = new Date()
-        // console.log(currentDate.getDate);
+        const monthNames = ["Jan", "Feb", "March", "April", "May", "June",
+            "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const salesmon = monthNames[currentDate.getMonth()];
+        console.log(salesmon);
         if (salesData) {
             const saleQty = Number(salesData.quantity) + Number(req.body.quantity);
             const salesPrice = Number(salesData.totalAmount) + Number(req.body.price);
-            console.log(currentDate);
             salesData.quantity = saleQty
             salesData.totalAmount = salesPrice
             salesData.saleYear = `${currentDate.getFullYear()}`
-            salesData.saleMon = `${currentDate.getMonth()}`
-            //    console.log(salesData);
-            res.status(200).send({ message: 'update sale data' });
+            salesData.saleMon = monthNames[currentDate.getMonth()]
+            prodQtyReduce.quantity = parseInt(prodQtyReduce.quantity) - parseInt(req.body.quantity)
+            // console.log(qtySub);
             await salesData.save();
+            await prodQtyReduce.save()
+            res.status(200).send({ message: 'update sale data' });
+
         } else {
-            // console.log('create');
             await salesModel.create({
                 email: req.body.email,
                 productName: req.body.productName,
@@ -33,9 +37,12 @@ const salesDataAdd = async (req, res) => {
                 quantity: req.body.quantity,
                 totalAmount: req.body.price,
                 saleYear: `${currentDate.getFullYear()}`,
-                saleMon: `${currentDate.getMonth()}`
-
+                saleMon: monthNames[currentDate.getMonth()]
             })
+            prodQtyReduce.quantity = parseInt(prodQtyReduce.quantity) - parseInt(req.body.quantity);
+
+            // console.log(qtySub);
+            await prodQtyReduce.save()
             res.status(200).send({ message: 'create sale data' });
 
         }
@@ -72,7 +79,7 @@ const getSalesData = async (req, res) => {
 
         const cateListAmt = removeDup.map((e) => {
             return categoryData[e].map((c) => Number(c.quantity))
-                .reduce((prev, cur) => { return prev + parseInt(cur) },0)
+                .reduce((prev, cur) => { return prev + parseInt(cur) }, 0)
         })
         // const obj=
         let categotyList = []
@@ -91,7 +98,7 @@ const getSalesData = async (req, res) => {
         const getmon = resData.map((e) => e.saleMon);
         // console.log(category);
         const removeMonDup = getmon.filter((e, i) => getmon.indexOf(e) == i)
-        console.log(removeMonDup);
+        // console.log(removeMonDup);
         const getMonData = resData.reduce((acc, e) => {
             // console.log(e.saleMon);
             acc[e.saleMon] = acc[e.saleMon] || []
@@ -121,9 +128,9 @@ const getSalesData = async (req, res) => {
         // })
         const Mondata = removeMonDup.map((a) => {
             return getMonData[a].map((c) => Number(c.quantity))
-                .reduce((prev, cur) => { return prev + parseInt(cur) },0)
+                .reduce((prev, cur) => { return prev + parseInt(cur) }, 0)
         })
-        let monDataList=[]
+        let monDataList = []
         for (var i = 0; i < removeMonDup.length; i++) {
             let thing = {};
             thing['mon'] = removeMonDup[i];
@@ -131,13 +138,13 @@ const getSalesData = async (req, res) => {
             monDataList.push(thing)
 
         }
-        console.log(monDataList);
+        // console.log(monDataList);
         // console.log(yeardata);
         // console.log(getMonData['oct']);
 
         res.status(200).send({
             message: 'fetched sales data', productChart
-            , categotyList,monDataList  
+            , categotyList, monDataList
         })
     } catch (error) {
         res.status(500).send({ message: error.message })
