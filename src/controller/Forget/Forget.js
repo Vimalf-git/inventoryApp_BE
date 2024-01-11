@@ -6,7 +6,7 @@ import mail from 'nodemailer'
 
 
 const forgetPassword = async (req, res) => {
-    // console.log(req.body.email);
+    console.log(req.body.email);
     try {
         const user = await userModel.findOne({ email: req.body.email });
         if (user) {
@@ -42,6 +42,7 @@ const forgetPassword = async (req, res) => {
         }
     } catch (error) {
         res.status(500).send({ message: 'Internal server error', error: error.message })
+        console.log(error.message);
     }
 }
 const getForgetres = async (req, res) => {
