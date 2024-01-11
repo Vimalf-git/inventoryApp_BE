@@ -6,8 +6,9 @@ const hashPassword = async (password) => {
     return hash
 }
 const creatToken = async (payload) => {
+    const d = new Date() + (60 * 60 * 1000);
     const token = await Jwt.sign(payload, process.env.SECRET_STRING, {
-        expiresIn: process.env.expire_time
+        expiresIn: d.setHours(d.getHours() + 1)
     });
     return token;
 }
