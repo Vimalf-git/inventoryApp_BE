@@ -6,7 +6,7 @@ import mail from 'nodemailer'
 
 
 const forgetPassword = async (req, res) => {
-    console.log(req.body.email);
+    // console.log(req.body.email);
     try {
         const user = await userModel.findOne({ email: req.body.email });
         if (user) {
@@ -72,7 +72,7 @@ const updatePassword = async (req, res) => {
         
         if(data){
             data.password = await auth.hashPassword(req.body.password)
-                    data.token="";
+                data.token="";
           await  data.save()
             res.status(200).send({ message: 'password updated' })
         }else{

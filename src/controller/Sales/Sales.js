@@ -34,7 +34,7 @@ const salesDataAdd = async (req, res) => {
                 email: req.body.email,
                 productName: req.body.productName,
                 category: req.body.category,
-                quantity: req.body.quantity,
+                quantity: req.body.quantity,    
                 totalAmount: req.body.price,
                 saleYear: `${currentDate.getFullYear()}`,
                 saleMon: monthNames[currentDate.getMonth()]
